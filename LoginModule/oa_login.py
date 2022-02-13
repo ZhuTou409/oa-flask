@@ -1,4 +1,5 @@
-from flask import Flask, request, redirect, url_for, render_template
+from flask import Flask, request, redirect, url_for, render_template, jsonify
+from flask_cors import CORS
 from flask_login import LoginManager, login_user, logout_user, current_user, login_required
 from DataBaseModels.user_models import User, query_user
 
@@ -10,6 +11,9 @@ login_manager.login_view = 'login'
 login_manager.login_message_category = 'info'
 login_manager.login_message = '请登录'
 login_manager.init_app(app)
+
+# enable CORS
+CORS(app, resources={r'/*': {'origins': '*'}})
 
 
 @login_manager.user_loader
@@ -29,23 +33,24 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    if request.method == 'POST':
-        user_id = request.form.get('userid')
-        user = query_user(user_id)
-        if user is not None and request.form['password'] == user['password']:
-
-            curr_user = User()
-            curr_user.id = user_id
-
-            # 通过Flask-Login的login_user方法登录用户
-            login_user(curr_user)
-
-            return redirect(url_for('index'))
+    # if request.method == 'POST':
+    #     user_id = request.form.get('userid')
+    #     user = query_user(user_id)
+    #     if user is not None and request.form['password'] == user['password']:
+    #
+    #         curr_user = User()
+    #         curr_user.id = user_id
+    #
+    #         # 通过Flask-Login的login_user方法登录用户
+    #         login_user(curr_user)
+    #
+    #         return redirect(url_for('index'))
 
         # flash('Wrong username or password!')
 
     # GET 请求
-    return render_template('login.html')
+    # return render_template('login.html')
+    return jsonify(u'校验登录!!')
 
 
 @app.route('/logout')
