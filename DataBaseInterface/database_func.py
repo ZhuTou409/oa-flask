@@ -59,6 +59,22 @@ class OADatabaseForm:
             listKeyValue.append({key: value})
         return self.m_DatabaseFormObj.find({szCondition: listKeyValue})
 
+    def InsertOne(self, dictKeyValue):
+        """
+        插入单条数据
+        :param dictKeyValue:
+        :return:
+        """
+        return self.m_DatabaseFormObj.insert_one(dictKeyValue)
+
+    def InsertMany(self, dictKeyValues):
+        """
+        插入多条数据
+        :param dictKeyValue:
+        :return:
+        """
+        return self.m_DatabaseFormObj.insert_many(dictKeyValues)
+
 
 DataFuncObj = DatabaseFunc()
 
