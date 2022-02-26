@@ -1,4 +1,5 @@
 from DataBaseInterface.database_func import DataFuncObj, OADatabaseForm
+import time
 
 
 class SaleOrderFormKey:
@@ -26,7 +27,7 @@ class SaleOrderFormModel:
     def SetCreateTime(self, nCreateTime):
         self.m_nCreateTime = nCreateTime
 
-    def InsertNewFormToDatabase(self):
+    def InsertAllInfoToForm(self):
         dictPreInsertData = {
             SaleOrderFormKey.ORDER_ID: self.m_szOrderID,
             SaleOrderFormKey.SUBMIT_SALE_NAME: self.m_szSubmitSaleName,
@@ -38,7 +39,21 @@ class SaleOrderFormModel:
         OrderFormObj.InsertOne(dictPreInsertData)
 
     def InitByOrderID(self, szOrderID):
+        """
+        初始化表单对象，通过表单ID
+        :param szOrderID:
+        :return:
+        """
         OrderFormObj = DataFuncObj.GetDataForm(SALE_ORDER_FORM_NAME)
         FormDict = OrderFormObj.Find(SaleOrderFormKey.ORDER_ID, szOrderID)
+
+        if FormDict is None:
+            return False
+
+        self.m_szOrderID = szOrderID
+        self.m_szSubmitSaleName = FormDict.get(SaleOrderFormKey.SUBMIT_SALE_NAME)
+        self.m_szOptionalName = FormDict.get(SaleOrderFormKey.OPTION_NAME)
+
+        self.m_nCreateTime = time.time()
 
 

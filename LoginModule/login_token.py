@@ -1,8 +1,7 @@
-from flask import request, jsonify, current_app, g
+from flask import current_app, g
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from itsdangerous import BadSignature, SignatureExpired
 from flask_httpauth import HTTPBasicAuth
-from DataBaseModels import user_models as user_models
 import re
 
 auth = HTTPBasicAuth()

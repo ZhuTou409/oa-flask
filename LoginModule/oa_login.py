@@ -1,13 +1,9 @@
-from flask import Flask, request, redirect, url_for, render_template, jsonify, g
-from flask_cors import CORS
-from flask_httpauth import HTTPBasicAuth
-from flask_login import LoginManager, login_user, logout_user, current_user, login_required
-from DataBaseModels.user_models import User, query_user, GetUserDataByUserName
-from login_token import auth as auth
+from flask import request, jsonify
+from flask_login import LoginManager, logout_user, login_required
+from DataBaseModels.UserModels.user_models import User, query_user, GetUserDataByUserName
 import login_token as login_token
-from router import app, cors
+from router import app
 from FileDownloadModule.file_download_upload import DownloadCtrl
-import json
 
 # app = Flask(__name__)
 # app.secret_key = '1234567'

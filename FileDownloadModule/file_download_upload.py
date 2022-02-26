@@ -1,6 +1,4 @@
-from DataBaseModels import user_models as user_models
-from flask import request, send_file, jsonify, make_response, send_from_directory
-from router import app
+from flask import send_file, jsonify, make_response
 import os
 
 TEST_FILE_DOWNLOAD_DIR_NAME = "F://"
