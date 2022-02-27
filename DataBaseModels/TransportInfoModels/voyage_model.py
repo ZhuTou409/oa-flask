@@ -10,22 +10,22 @@ class VoyageFormKey:
     BOAT_COMPANY_NAME = "BoatCompanyName"
 
 
+VOYAGE_FORM_KEY_NUMBER = 5
 VOYAGE_FORM_NAME = "Voyage"
 
 
 class VoyageModel(ModelBase):
     """
-    客户信息数据类
+    航次信息数据类
     """
-    def __init__(self, szVoyageName):
-        super().__init__()
+    def __init__(self, szVoyageName, dictInfo=None):
         self.m_szVoyageName = szVoyageName
         self.m_szBoatName = None
         self.m_szStartPort = None
         self.m_szTargetPort = None
         self.m_szBoatCompanyName = None
 
-        self.InitByMainKey(szVoyageName)
+        super().__init__(szVoyageName, dictInfo)
 
     def InsertAllInfoToForm(self):
         dictPreInsertData = {
@@ -52,6 +52,16 @@ class VoyageModel(ModelBase):
         self.m_szTargetPort = FormDict.get(VoyageFormKey.TARGET_PORT)
         self.m_szBoatCompanyName = FormDict.get(VoyageFormKey.BOAT_COMPANY_NAME)
         return True
+
+    def InitByDict(self, InfoDict):
+        if len(InfoDict) != VOYAGE_FORM_KEY_NUMBER:
+            return
+
+        self.m_szVoyageName = InfoDict.get(VoyageFormKey.VOYAGE_NAME)
+        self.m_szBoatName = InfoDict.get(VoyageFormKey.BOAT_NAME)
+        self.m_szStartPort = InfoDict.get(VoyageFormKey.START_PORT)
+        self.m_szTargetPort = InfoDict.get(VoyageFormKey.TARGET_PORT)
+        self.m_szBoatCompanyName = InfoDict.get(VoyageFormKey.BOAT_COMPANY_NAME)
 
     def GetVoyageName(self):
         return self.m_szVoyageName
