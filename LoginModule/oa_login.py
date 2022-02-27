@@ -1,9 +1,17 @@
+import sys
+sys.path.append('..')
+sys.path.append('..\\LoginModule')
+sys.path.append('..\\oa-flask\\DataBaseModels')
+sys.path.append('..\\oa-flask\\DataBaseModels\\CustomerModels')
+sys.path.append('..\\oa-flask\\DataBaseModels\\UserModels')
+
 from flask import request, jsonify
 from flask_login import LoginManager, logout_user, login_required
 from DataBaseModels.UserModels.user_models import User, query_user, GetUserDataByUserName
 import login_token as login_token
 from router import app
 from FileDownloadModule.file_download_upload import DownloadCtrl
+
 
 # app = Flask(__name__)
 # app.secret_key = '1234567'
