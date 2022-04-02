@@ -18,7 +18,7 @@ class DatabaseFunc:
             self.bInitDBSuccess = False
 
         self.mongoDBObj = self.client['oaSystem']
-        self.CollectionObj = self.mongoDBObj.zhu
+        # self.CollectionObj = self.mongoDBObj.zhu
 
     def GetDataForm(self, szFormName):
         """
@@ -37,13 +37,25 @@ class OADatabaseForm:
         self.m_DatabaseFormObj = DatabaseFormObj
 
     def Find(self, Key, Value):
-        return self.m_DatabaseFormObj.find({Key: Value})
+        Cursor = self.m_DatabaseFormObj.find({Key: Value})
+        returnDict = []
+        for Answer in Cursor:
+            returnDict.append(Answer)
+        return returnDict
 
     def FindAnd(self, dictKeyValue):
-        return self._InternalFind(dictKeyValue, DBFindConditionType.AND)
+        Cursor = self._InternalFind(dictKeyValue, DBFindConditionType.AND)
+        returnDict = []
+        for Answer in Cursor:
+            returnDict.append(Answer)
+        return returnDict
 
     def FindOr(self, dictKeyValue):
-        return self._InternalFind(dictKeyValue, DBFindConditionType.OR)
+        Cursor = self._InternalFind(dictKeyValue, DBFindConditionType.OR)
+        returnDict = []
+        for Answer in Cursor:
+            returnDict.append(Answer)
+        return returnDict
 
     def NormalFind(self, KeyValueObj):
         """

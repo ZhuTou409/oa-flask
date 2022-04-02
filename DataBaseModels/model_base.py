@@ -24,6 +24,10 @@ class ModelBase:
         pass
 
     def InsertAllInfoToForm(self):
+        """
+        将所有变量保存只数据库，更新数据库信息
+        :return:
+        """
         pass
 
     def CheckIsNewKeyValuePair(self, dictInfo):

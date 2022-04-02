@@ -1,38 +1,33 @@
 import sys
+import datetime
 sys.path.append('..')
 sys.path.append('..\\LoginModule')
 sys.path.append('..\\oa-flask\\DataBaseModels')
 sys.path.append('..\\oa-flask\\DataBaseModels\\CustomerModels')
 sys.path.append('..\\oa-flask\\DataBaseModels\\UserModels')
 
-from flask import request, jsonify
-from flask_login import LoginManager, logout_user, login_required
-from DataBaseModels.UserModels.user_models import User, query_user, GetUserDataByUserName
-import login_token as login_token
-from router import app
+from flask import request, jsonify, session, Blueprint
+from flask_login import LoginManager, login_user, logout_user, login_required
+from LoginModule.login_def import LoginFormKey
+# import login_token as login_token
 from FileDownloadModule.file_download_upload import DownloadCtrl
+from DataBaseModels.UserModels.user_models import EmployeeManager, EmployeeModelBase
+from app import ServerInstance
+
+auth_flask_login = Blueprint('auth_flask_login', __name__)
+DURATION_SEC = datetime.timedelta(seconds=60)
 
 
-# app = Flask(__name__)
-# app.secret_key = '1234567'
-
-login_manager = LoginManager()
-login_manager.login_view = 'login'
-login_manager.login_message_category = 'info'
-login_manager.login_message = '请登录'
-login_manager.init_app(app)
-
-# enable CORS
-# CORS(app, resources={r'/*': {'origins': '*'}}, supports_credentials=True)
-
-
-@login_manager.user_loader
+@ServerInstance.login_manager.user_loader
 def load_user(user_id):
-    if query_user(user_id) is not None:
-        curr_user = User()
-        curr_user.id = user_id
-
-        return curr_user
+    EmployeeObj = EmployeeManager.GetUserModelByUserID(user_id)
+    print("load_user: {}".format(user_id))
+    if EmployeeObj is None:
+        print("yesr: {}".format(user_id))
+        return EmployeeManager.CreateNewEmployeeModelByUserID(user_id)
+    else:
+        print("no: {}".format(user_id))
+        return EmployeeObj
 
 
 # @app.route('/')
@@ -40,33 +35,30 @@ def load_user(user_id):
 # def index():
 #     return 'Logged in as: %s' % current_user.get_id()
 
-@app.route('/login', methods=['GET', 'POST'])
+@auth_flask_login.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        print("post data:{}".format(str(request.form)))
-        szUserName = request.form.get('userid')
+        data = request.get_json(silent=True)
+        print("post data:{}".format(str(data)))
 
-        szRequestUserName = request.form.get("username", "")
-        szRequestPassword = request.form.get("password", "")
-
+        szRequestUserName = data.get(LoginFormKey.EMPLOYEE_NAME)
+        szRequestPassword = data.get(LoginFormKey.EMPLOYEE_PASSWORD)
         print("user form: {} {}".format(szRequestUserName, szRequestPassword))
 
-        UserData = GetUserDataByUserName(szRequestUserName)
-        if UserData is not None and UserData["password"] == szRequestPassword:
-            print("校验成功")
-            token = login_token.create_token(szRequestUserName)
-            return jsonify({'token': token})
-    #     if user is not None and request.form['password'] == user['password']:
-    #
-    #         curr_user = User()
-    #         curr_user.id = user_id
-    #
-    #         # 通过Flask-Login的login_user方法登录用户
-    #         login_user(curr_user)
-    #
-    #         return redirect(url_for('index'))
+        if szRequestPassword is None or szRequestUserName is None:
+            returnData = {'code': -1, 'msg': 'failed', 'data': {'tips': 'username or password is not correct'}}
+            return jsonify(returnData)
 
-        # flash('Wrong username or password!')
+        LoginEmployeeObj = EmployeeManager.GetUserModelByNameAndPassword(szRequestUserName, szRequestPassword)
+        if LoginEmployeeObj is None:
+            # 校验失败
+            returnData = {'code': -1, 'msg': 'failed', 'data': {'tips': 'username or password is not correct'}}
+            return jsonify(returnData)
+        else:
+            bLoginSucceed = login_user(LoginEmployeeObj, remember=True, duration=DURATION_SEC)
+            print("login succeed: {}".format(bLoginSucceed))
+            returnData = {'code': 1, 'msg': 'succeed', 'data': {'tips': 'login succeed'}}
+            return jsonify(returnData)
 
     # GET 请求
     # return render_template('login.html')
@@ -76,14 +68,35 @@ def login():
     return jsonify(returnData)
 
 
-@app.route('/logout')
+@ServerInstance.App.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
-    logout_user()
-    return 'Logged out successfully!'
+    # logout_user()
+    print("logout")
+    returnData = {'code': 1, 'msg': 'failed', 'succeed': {'tips': 'Logged out successfully!'}}
+    return jsonify(returnData)
 
 
-@app.route('/download', methods=['GET', 'POST'])
+@auth_flask_login.route('/register', methods=['GET', 'POST'])
+def NewEmployeeRegister():
+    """
+    对应注册页面
+    :return:
+    """
+    if request.method == 'POST':
+        data = request.get_json(silent=True)
+        print("register in ：{}".format(str(data)))
+        bRegisterSucceed, szContent = EmployeeManager.RegisterNewModel(data)
+        returnData = {'code': 1, 'msg': str(bRegisterSucceed), 'data': {'tips': szContent}}
+        print("tips:{}".format(szContent))
+
+        return jsonify(returnData)
+
+    returnData = {'code': -1, 'msg': 'failed', 'data': {'tips': 'register false'}}
+    return jsonify(returnData)
+
+
+@auth_flask_login.route('/download', methods=['GET', 'POST'])
 def DownloadFile():
     print("begin download")
     szFileName = request.form.get('filename', None)
@@ -95,7 +108,7 @@ def DownloadFile():
     return DownloadCtrl.DownloadFile(szFileName)
 
 
-@app.route('/upload', methods=['GET', 'POST'])
+@auth_flask_login.route('/upload', methods=['GET', 'POST'])
 def UploadFile():
     print("begin upload")
     name = request.form.get("name")
@@ -106,10 +119,10 @@ def UploadFile():
     return jsonify({'tips': "succeed"})
 
 
-@app.route('/autoroute/<username>', methods=['GET', 'POST'])
+@auth_flask_login.route('/autoroute/<username>', methods=['GET', 'POST'])
 def TestAutoRoute(username):
     print("username:{}".format(username))
 
 
-if __name__ == '__main__':
-    app.run(debug=True)
+# if __name__ == '__main__':
+#     app.run(debug=True)
