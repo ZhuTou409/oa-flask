@@ -13,6 +13,12 @@ class SaleOrderFormKey:
     DELEGATE_COMPANY_CUSTOMER = "DelegateCompanyCustomer"
     RECEIVE_COMPANY_CUSTOMER = "ReceiveCompanyCustomer"
     VOYAGE_INFO = "VoyageInfo"
+    TRAILER_GROUP = "TrailerGroup"
+    BAOGUAN_HANG = "BaoGuanHang"
+    REGISTER = "Register"
+    CONTAINER_TYPE = "ContainerSize"
+    CONTAINER_COUNT = "ContainerCount"
+    WEIGHT = "Weight"
 
 
 SALE_ORDER_FORM_KEY_NUMBER = 4
@@ -37,6 +43,18 @@ class SaleOrderFormModel(ModelBase):
         self.m_ReceiveCompanyCustomerModel = None
         # 货运航次
         self.m_VoyageModel = None
+        # 拖车队
+        self.m_szTrailerGroup = None
+        # 报关行
+        self.m_szBaoGuanHang = None
+        # 代理
+        self.m_szRegister = None
+        # 柜型
+        self.m_szContainerType = None
+        # 方数
+        self.m_nContainerCount = None
+        # 重量
+        self.m_szWeight = None
 
         super().__init__(szOrderID, dictInfo)
 
@@ -80,6 +98,18 @@ class SaleOrderFormModel(ModelBase):
         self.m_szSubmitSaleName = InfoDict.get(SaleOrderFormKey.SUBMIT_SALE_NAME)
         self.m_szOptionalName = InfoDict.get(SaleOrderFormKey.OPTION_NAME)
         self.m_nCreateTime = time.time()
+        # 拖车队
+        self.m_szTrailerGroup = InfoDict.get(SaleOrderFormKey.TRAILER_GROUP)
+        # 报关行
+        self.m_szBaoGuanHang = InfoDict.get(SaleOrderFormKey.BAOGUAN_HANG)
+        # 代理
+        self.m_szRegister = InfoDict.get(SaleOrderFormKey.REGISTER)
+        # 柜型
+        self.m_szContainerType = InfoDict.get(SaleOrderFormKey.CONTAINER_TYPE)
+        # 方数
+        self.m_nContainerCount = InfoDict.get(SaleOrderFormKey.CONTAINER_COUNT)
+        # 重量
+        self.m_szWeight = InfoDict.get(SaleOrderFormKey.WEIGHT)
 
         # 主属性赋值
         self._InitMainAttrInfo(InfoDict)

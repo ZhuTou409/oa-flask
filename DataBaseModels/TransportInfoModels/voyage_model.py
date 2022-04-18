@@ -27,6 +27,16 @@ class VoyageModel(ModelBase):
 
         super().__init__(szVoyageName, dictInfo)
 
+    @staticmethod
+    def GetAllVoyageInfoList():
+        OrderFormObj = DataFuncObj.GetDataForm(VOYAGE_FORM_NAME)
+        listFindInfo = OrderFormObj.Find()
+        listReturnInfo = []
+        for dictVoyageInfo in listFindInfo:
+            NewVoyageModel = VoyageModel(None, dictVoyageInfo)
+            listReturnInfo.append(NewVoyageModel)
+        return listReturnInfo
+
     def InsertAllInfoToForm(self):
         dictPreInsertData = {
             VoyageFormKey.VOYAGE_NAME: self.m_szVoyageName,

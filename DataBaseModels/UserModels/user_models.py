@@ -182,6 +182,7 @@ class EmployeeModelBase(UserMixin, ModelBase):
         self.m_szHashPassword = InfoDict.get(EmployeeFormKey.PASSWORD)
 
     def get_id(self):
+        print("get id: {}".format(self.m_szIdentifyUserID))
         return self.m_szIdentifyUserID
 
     def is_active(self):
