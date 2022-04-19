@@ -1,0 +1,52 @@
+import time
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# 24小时
+MAX_LOGIN_SAVE_TIME_SEC = 24 * 60 * 60
+# 一个小时检查一次
+CHACK_SAVE_SESSION_TO_FILE = 1 * 60 * 60
+
+class LoginSessionController():
+    def __init__(self, id):
+        self.m_mapNowLoginSession = {}
+
+
+class SessionInfo():
+    def __init__(self, szSession, nCreateTime, szUserName):
+        self.m_szSession = szSession
+        self.m_nCreateTime = nCreateTime
+        self.m_szUserName = szUserName
+
+    """
+    session信息是否相等
+    """
+    def IsEqual(self, InSessionInfoObj):
+        if InSessionInfoObj.m_szSession != self.m_szSession:
+            return False
+        
+        nNowTime = time.time()
+        if InSessionInfoObj.m_nCreateTime - nNowTime > MAX_LOGIN_SAVE_TIME_SEC:
+            return False
+        
+        return True
+    
+    def CreateNewSessionInfo(self, szUserName, szPassword):
+        nCreateTime = time.time()
+        szPreSession = szUserName + szPassword + nCreateTime
+        szSession = generate_password_hash(szPreSession)
+        NewSessionInfoObj = SessionInfo(szSession, nCreateTime, szUserName)
+        self.m_mapNowLoginSession[szSession] = NewSessionInfoObj
+        return NewSessionInfoObj
+
+    def OnUpdate(self):
+        nCreateTime = time.time()
+    
+    """
+    根据时间检查是否需要从内存存储转到硬盘存储
+    """
+    def ChackCanStoreToFile(self):
+        pass
+
+        
+
+LoginSessionCtrller = LoginSessionController()
