@@ -37,11 +37,15 @@ class OADatabaseForm:
         self.m_DatabaseFormObj = DatabaseFormObj
 
     def Find(self, Key, Value):
-        Cursor = self.m_DatabaseFormObj.find({Key: Value})
-        returnDict = []
+        Cursor = None
+        if Key is None and Value is None:
+            Cursor = self.m_DatabaseFormObj.find()
+        else:
+            Cursor = self.m_DatabaseFormObj.find({Key: Value})
+        returnInfoList = []
         for Answer in Cursor:
-            returnDict.append(Answer)
-        return returnDict
+            returnInfoList.append(Answer)
+        return returnInfoList
 
     def FindAnd(self, dictKeyValue):
         Cursor = self._InternalFind(dictKeyValue, DBFindConditionType.AND)
